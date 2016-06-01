@@ -26,6 +26,12 @@ namespace FreeMusic
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/site.css"));
+
+            bundles.Add(new ScriptBundle("~/bundles/angularJs").Include(
+                "~/Content/AngularJs/angular.min.js", 
+                "~/Content/AngularJs/angulartube.js"
+                ));
+            BundleTable.EnableOptimizations = false;
         }
     }
 }

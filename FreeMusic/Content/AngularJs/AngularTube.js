@@ -10,7 +10,7 @@ app.run(function () {
 
 // Service
 
-app.service('googleService', ['$window', function ($window) {
+app.service('googleService', ['$window', function ($window, $log) {
 
     var service = this;
     var results = [];
@@ -68,7 +68,7 @@ app.service('googleService', ['$window', function ($window) {
 
 
     //Call out API function to load video by it's ID
-    this.loadVideo = function(id) {
+    this.loadVideo = function (id) {
         youtube.player.loadVideoById(id);
         youtube.videoId = id;
     }
@@ -94,8 +94,14 @@ app.controller('googleController', function ($scope, $http, $log, googleService)
         $scope.results = googleService.getResults();
     }
 
-    $scope.playVideo = function(id) {
-        googleService.loadVideo(id);
+    $scope.playVideo = function (id) {
+        
+        if (id) {
+            googleService.loadVideo(id); 
+        }
+             
+        
+        
     };
 
 

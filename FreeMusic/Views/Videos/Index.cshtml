@@ -1,0 +1,97 @@
+﻿
+@model IEnumerable<Domain.Video>
+<html ng-app="YouTubefy">
+
+@{
+    ViewBag.Title = "YouTubefy";
+}
+<head>
+    <meta charset="utf-8">
+    <title>
+        @ViewBag.Title;
+    </title>
+</head>
+<body  ng-controller="googleController">
+    <header>
+        <h1>You<strong>Tubefy</strong></h1>
+        <form id="search" ng-submit="search()">
+            <input id="query" name="q" type="text" placeholder="Search for a YouTube video" ng-model="query">
+            <input id="submit" type="image" src="search.png" alt="Search">
+        </form>
+    </header>
+    <div id="results">
+        <div class="video" ng-repeat="video in results" ng-click="playVideo(video.id)">
+            <img class="video-image" ng-src="{{ video.thumbnail }}">
+            <p class="video-title">{{ video.title }}</p>
+            <p class="video-author">{{ video.author }}</p>
+            <p class="video-description">{{ video.description }}</p>
+        </div>
+    </div>
+
+    <div id="player">
+        <div id="placeholder"></div>
+    </div>
+    @Scripts.Render("~/bundles/angularJs")
+    @*<script src="~/angular.min.js"></script>
+    <script src="angular-local-storage.js"></script>
+    <script src="~/AngularTube.js"></script>*@
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@*@model IEnumerable<Domain.Video>
+
+    @{
+        ViewBag.Title = "Index";
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+
+    <h2>Index</h2>
+
+    <p>
+        @Html.ActionLink("Create New", "Create")
+    </p>
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.VideoId)
+            </th>
+            <th></th>
+        </tr>
+
+    @foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.VideoId)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id=item.YoutubeId }) |
+                @Html.ActionLink("Details", "Details", new { id=item.YoutubeId }) |
+                @Html.ActionLink("Delete", "Delete", new { id=item.YoutubeId })
+            </td>
+        </tr>
+    }
+
+    </table>*@
