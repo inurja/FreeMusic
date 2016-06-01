@@ -27,9 +27,9 @@ namespace FreeMusic
                       "~/Content/bootstrap.css",
                       "~/Content/site.css"));
 
-            bundles.Add(new ScriptBundle("~/bundles/angularJs").Include(
+            bundles.Add(new ScriptBundle("~/bundles/angular").Include(
                 "~/Content/AngularJs/angular.min.js", 
-                "~/Content/AngularJs/angulartube.js"
+                "~/Content/AngularJs/AngularTube.js"
                 ));
             BundleTable.EnableOptimizations = false;
         }

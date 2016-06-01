@@ -62,6 +62,7 @@ app.service('googleService', ['$window', function ($window, $log) {
                 youtube.player.destroy(); //destroy current
             } else {
                 youtube.player = service.createPlayer(); //call out method to create new one
+                console.log(youtube.player);
             }
         }
     };
@@ -69,6 +70,8 @@ app.service('googleService', ['$window', function ($window, $log) {
 
     //Call out API function to load video by it's ID
     this.loadVideo = function (id) {
+        console.log(id);
+        console.log(youtube.player);
         youtube.player.loadVideoById(id);
         youtube.videoId = id;
     }
