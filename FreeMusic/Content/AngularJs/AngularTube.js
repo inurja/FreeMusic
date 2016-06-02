@@ -20,8 +20,8 @@ app.service('googleService', ['$window', function ($window) {
         playerId: null,
         videoId: null,
         videoTitle: null,
-        playerHeight: '390',
-        playerWidth: '640'
+        playerHeight: '450',
+        playerWidth: '100%'
     };
     var playList = [
         //{id: 'someId', title: 'someTitle'}

@@ -7,93 +7,39 @@
     var videoAuthor = "{{video.author}}";
 }
 <div id="mainDiv">
-    <header>
-        <h1>
-            You<strong>Tubefy</strong>
-        </h1>
-        <form id="search" ng-submit="search()">
-            <input id="query" name="q" type="text" placeholder="Search for a YouTube video" ng-model="query">
-            <!--<input id="submit" type="image" src="search.png" alt="Search">-->
-            <input type="submit">
-        </form>
-    </header>
-    <div id="customPlaylist">
-        <li ng-repeat="video in playList">
-            <p class="video-title" ng-click="playVideo(video.id, video.title)">@videoTitle</p>
-            <input id="removeButton" type="button" value="Remove" ng-click="removeVideoFromPlaylist(video.id)" />
-        </li>
-    </div>
-    <div id="results">
-        <div class="video" ng-repeat="video in results" ng-click="addVideoToList(video.id, video.title)">
-            <img class="video-image" ng-src="{{ video.thumbnail }}">
-
-            <p class="video-title">@videoTitle</p>
-            <p class="video-author">@videoAuthor</p>
-
-            <!--<p class="video-title">{{ video.title }}</p>-->
-            <!--<p class="video-author">{{ video.author }}</p>-->
-            <!--<p class="video-description">{{ video.description }}</p>-->
+    <header></header>
+    <div class="row">
+        <div class="col-sm-3 col-md-3 col-lg-3 bg">
+            <H1>Search results</H1>
+            <div id="results">
+                <div class="video" ng-repeat="video in results">
+                    <img class="video-image" ng-src="{{ video.thumbnail }}">
+                    <p class="video-title">@videoTitle</p>
+                    <input class="btn-info btn" value="Play" type="button" ng-click="playVideo(video.id,video.title)" />
+                    <input class="btn-success btn" type="button" value="Add to playlist" ng-click="addVideoToList(video.id, video.title)" />
+                    @*<p class="video-author">@videoAuthor</p>*@
+                    <hr />
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-6 col-lg-6">
+            <h2>Currently Playing: {{ youtube.videoTitle }}</h2>
+            <div id="player">
+                <div id="placeholder"></div>
+            </div>
+        </div>
+        <div class="col-sm-3 col-md-3 col-lg-3 list-group">
+            <H1>Playlist</H1>
+            <div id="customPlaylist">
+                <table class=" table-striped">
+                    <tr ng-repeat="video in playList">
+                        <td>
+                            <p class="video-title" ng-click="playVideo(video.id, video.title)">@videoTitle</p>
+                            <input id="removeButton" class="btn-default btn btn-danger" type="button" value="Remove" ng-click="removeVideoFromPlaylist(video.id)" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
         </div>
     </div>
-    <h2>Currently Playing: {{ youtube.videoTitle }}</h2>
-    <div id="player">
-        <div id="placeholder"></div>
-    </div>
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-@*@model IEnumerable<Domain.Video>
-
-    @{
-        ViewBag.Title = "Index";
-        Layout = "~/Views/Shared/_Layout.cshtml";
-    }
-
-    <h2>Index</h2>
-
-    <p>
-        @Html.ActionLink("Create New", "Create")
-    </p>
-    <table class="table">
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Title)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.VideoId)
-            </th>
-            <th></th>
-        </tr>
-
-    @foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.VideoId)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { id=item.YoutubeId }) |
-                @Html.ActionLink("Details", "Details", new { id=item.YoutubeId }) |
-                @Html.ActionLink("Delete", "Delete", new { id=item.YoutubeId })
-            </td>
-        </tr>
-    }
-
-    </table>*@

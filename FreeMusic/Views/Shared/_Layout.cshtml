@@ -10,27 +10,30 @@
 </head>
 <body ng-controller="googleController">
     <div class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
+        <div class="container navbar-left">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                @Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+                @Html.ActionLink("YouTubefy", "Index", "Home", new {area = ""}, new {@class = "navbar-brand"})
             </div>
+
             <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                    <li>@Html.ActionLink("About", "About", "Home")</li>
-                    <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
-                    <li>@Html.ActionLink("VideoPlayer", "Index", "Videos")</li>
-            </ul>
-                @Html.Partial("_LoginPartial")
+                <ul class="kunt">
+                    <li class="navbar-fixed-top">
+                        <form class="input-group-lg" ng-submit="search()">
+                            <input class="oymate" id="query" name="q" type="text" placeholder="Search for a YouTube video" ng-model="query">
+                            <!--<input id="submit" type="image" src="search.png" alt="Search">-->
+                            <input class="btn-info btn btn-lg" type="submit">
+                        </form>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
-    <div class="container body-content">
+    <div class="body-content">
         @RenderBody()
         <hr />
         <footer>
