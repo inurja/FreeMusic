@@ -10,7 +10,7 @@ app.run(function () {
 
 // Service
 
-app.service('googleService', ['$window', function ($window, $log) {
+app.service('googleService', ['$window', function ($window) {
 
     var service = this;
     var results = [];
@@ -23,6 +23,9 @@ app.service('googleService', ['$window', function ($window, $log) {
         playerHeight: '390',
         playerWidth: '640'
     };
+    var playList = [
+        //{id: 'someId', title: 'someTitle'}
+    ];
 
     this.listResults = function (data) {
         results.length = 0;
@@ -61,19 +64,23 @@ app.service('googleService', ['$window', function ($window, $log) {
             if (youtube.player) { //if there already is a player
                 youtube.player.destroy(); //destroy current
             } else {
-                youtube.player = service.createPlayer(); //call out method to create new one
+                youtube.player = service.createPlayer(); //call out method to create new one and assign the object to player
                 console.log(youtube.player);
             }
         }
     };
 
 
-    //Call out API function to load video by it's ID
-    this.loadVideo = function (id) {
+    //Call out API function to load video by it's ID and set title so we can show currently playing in html somewhere big
+    this.loadVideo = function (id, title) {
         console.log(id);
         console.log(youtube.player);
         youtube.player.loadVideoById(id);
         youtube.videoId = id;
+        youtube.videoTitle = title;
+        console.log("Title in load video service function: " + title);
+        console.log("Youtube.videoTitle in load video service function: " + youtube.videoTitle);
+        return youtube;
     }
 
     //function to bind youtube player with elementId
@@ -81,9 +88,35 @@ app.service('googleService', ['$window', function ($window, $log) {
         youtube.playerId = elementId;
     }
 
+    this.addVideoToList = function(id, title) {
+        playList.push({
+            id: id,
+            title: title
+        });
+        return playList;
+    }
+
+    //function to remove video from our custom playlist by youtube videoId
+    this.removeVideoFromPlaylist = function (id) {
+        var list = this.getPlaylist();
+        //console.log("list: " + list);
+        for (var i = 0; i <= list.length - 1; i++) {
+            //console.log("list index " + i + " element: " + list[i]);
+            if (list[i].id === id) {
+                console.log("If condition True, splice and break, Video REMOVED from playlist");
+                list.splice(i, 1); //splice i = where to remove, 1 = how many to remove, optional params in end to add new elements
+                break;
+            }
+        }
+    };
+
     this.getResults = function () {
         return results;
     };
+
+    this.getPlaylist = function() {
+        return playList;
+    }
 
 }]);
 
@@ -95,18 +128,24 @@ app.controller('googleController', function ($scope, $http, $log, googleService)
 
     function init() {
         $scope.results = googleService.getResults();
+        $scope.playList = googleService.getPlaylist();
     }
 
-    $scope.playVideo = function (id) {
-        
-        if (id) {
-            googleService.loadVideo(id); 
-        }
-             
-        
-        
+    //Call service function to play video
+    $scope.playVideo = function (id, title) {
+       googleService.loadVideo(id, title); 
     };
 
+    //Call service function to add video to custom list
+    $scope.addVideoToList = function(id, title) {
+        googleService.addVideoToList(id, title);
+    };
+
+    //Call service function to remove video from custom list by id
+    $scope.removeVideoFromPlaylist = function(id) {
+        googleService.removeVideoFromPlaylist(id);
+        console.log("Delete video ID: " + id);
+    };
 
     $scope.search = function (isNewQuery) {
         $http.get('https://www.googleapis.com/youtube/v3/search', { //GET request to this address

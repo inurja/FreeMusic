@@ -1,48 +1,45 @@
 ﻿
 @model IEnumerable<Domain.Video>
-<html ng-app="YouTubefy">
 
 @{
     ViewBag.Title = "YouTubefy";
-    var c = "{{video.title}}";
+    var videoTitle = "{{video.title}}";
+    var videoAuthor = "{{video.author}}";
 }
-<head>
-    <meta charset="utf-8">
-    <title>
-        @ViewBag.Title;
-    </title>
-</head>
-<body  ng-controller="googleController">
+<div id="mainDiv">
     <header>
-        <h1>You<strong>Tubefy</strong></h1>
+        <h1>
+            You<strong>Tubefy</strong>
+        </h1>
         <form id="search" ng-submit="search()">
             <input id="query" name="q" type="text" placeholder="Search for a YouTube video" ng-model="query">
-            <input id="submit" type="image" src="search.png" alt="Search">
+            <!--<input id="submit" type="image" src="search.png" alt="Search">-->
+            <input type="submit">
         </form>
     </header>
-<div id="results">
-    <div class="video" ng-repeat="video in results" ng-click="playVideo(video.id)">
-        <img class="video-image" ng-src="{{ video.thumbnail }}">
-
-        @*<p class="video-title">@c</p>@*razor*@
-
-        <p class="video-title">{{ video.title }}</p>@*html*@
-
-
-        <p class="video-author">{{ video.author }}</p>
-        <p class="video-description">{{ video.description }}</p>
+    <div id="customPlaylist">
+        <li ng-repeat="video in playList">
+            <p class="video-title" ng-click="playVideo(video.id, video.title)">@videoTitle</p>
+            <input id="removeButton" type="button" value="Remove" ng-click="removeVideoFromPlaylist(video.id)" />
+        </li>
     </div>
-</div>
+    <div id="results">
+        <div class="video" ng-repeat="video in results" ng-click="addVideoToList(video.id, video.title)">
+            <img class="video-image" ng-src="{{ video.thumbnail }}">
+
+            <p class="video-title">@videoTitle</p>
+            <p class="video-author">@videoAuthor</p>
+
+            <!--<p class="video-title">{{ video.title }}</p>-->
+            <!--<p class="video-author">{{ video.author }}</p>-->
+            <!--<p class="video-description">{{ video.description }}</p>-->
+        </div>
+    </div>
+    <h2>Currently Playing: {{ youtube.videoTitle }}</h2>
     <div id="player">
         <div id="placeholder"></div>
     </div>
-    @*@Scripts.Render("~/bundles/angular")*@
-    @*<script src="~/angular.min.js"></script>
-    <script src="angular-local-storage.js"></script>
-    <script src="~/AngularTube.js"></script>*@
-</body>
-</html>
-
+</div>
 
 
 
