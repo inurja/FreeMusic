@@ -54,7 +54,8 @@ app.service('googleService', ['$window', function ($window) {
         {
             height: youtube.playerHeight,
             width: youtube.playerWidth,
-            videoId: 'Rd8Wez2_j7Y'
+            videoId: 'Rd8Wez2_j7Y',
+            videoTitle: 'Ayy lmao'
         });
     }
 

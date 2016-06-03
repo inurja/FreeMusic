@@ -6845,7 +6845,7 @@ display: inline-block;
   text-decoration: normal;
   -o-text-overflow: ellipsis;
   text-overflow: ellipsis;
-  background: rgba(40,40,40,0.4);
+  background: rgba(100,100,100,0.8);
   -webkit-box-shadow: 1px 1px 2px 0 rgba(0,0,0,0.5) inset;
   box-shadow: 1px 1px 2px 0 rgba(0,0,0,0.5) inset;
   -webkit-transition: all 502ms cubic-bezier(0.68, -0.75, 0.265, 1.75);
@@ -6872,4 +6872,49 @@ display: inline-block;
   -moz-transition: all 601ms cubic-bezier(0.68, -0.75, 0.265, 1.75);
   -o-transition: all 601ms cubic-bezier(0.68, -0.75, 0.265, 1.75);
   transition: all 601ms cubic-bezier(0.68, -0.75, 0.265, 1.75);
+}
+
+#middleColumn {
+    background-color: #222222;
+    height:100%;
+}
+
+#currentlyPlaying {
+    color: #ffffff;
+}
+
+html {
+    height: 100%;
+}
+
+#mainDiv {
+    height: 100%;
+}
+
+.body-content {
+    height: 100%;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.row {
+    height: 100%;
+}
+
+#footer {
+    background-color: #222222;
+    height:100px;
+}
+
+body {
+    height: 100%;
+}
+
+#leftColumn, #rightColumn {
+    overflow-y: scroll;
+    height: 100%
+}
+
+.table {
+    width: 100%;
 }

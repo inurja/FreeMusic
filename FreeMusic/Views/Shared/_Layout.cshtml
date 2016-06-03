@@ -24,7 +24,7 @@
                 <ul class="kunt">
                     <li class="navbar-fixed-top">
                         <form class="input-group-lg" ng-submit="search()">
-                            <input class="oymate" id="query" name="q" type="text" placeholder="Search for a YouTube video" ng-model="query">
+                            <input class="oymate" id="query" name="q" type="text" placeholder="Search..." ng-model="query">
                             <!--<input id="submit" type="image" src="search.png" alt="Search">-->
                             <input class="btn-info btn btn-lg" type="submit">
                         </form>
@@ -35,9 +35,12 @@
     </div>
     <div class="body-content">
         @RenderBody()
-        <hr />
+        <!--<hr/>
         <footer>
             <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+        </footer>-->
+        <footer id="footer">
+            <p>&copy; @DateTime.Now.Year - YouTubefy</p>
         </footer>
     </div>
 
