@@ -148,7 +148,73 @@ app.controller('googleController', function ($scope, $http, $log, googleService)
         console.log("Delete video ID: " + id);
     };
 
+    $scope.logIn = function() {
+        var url = 'http://localhost:43467/Token';
+        //var loginData = 'grant_type=password&username=1@eesti.ee&password=a';
+        var loginData = {
+            grant_type: 'password',
+            username: "1@eesti.ee",
+            password: "a"
+        };
+        var data =
+        //var tokenKey = "";
+        $http({
+                method: 'POST',
+                url: url,
+                data: $.param({
+                    grant_type: "password",
+                    username: "1@eesti.ee",
+                    password: "a"
+                }),
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }
+            })
+            .then(function(response, data) {
+                console.log(response);
+                console.log(data);
+                //sessionStorage.setItem(tokenKey, data.access_token);
+            });
+
+    }
+
+    $scope.addToDatabase = function () {
+        console.log("POST called4");
+        var cors = new XMLHttpRequest();
+        var url = 'http://localhost:43467/api/Videos'
+        var data =
+            '<?xml version="1.0"?><VideoDTO><Title>Client post test</Title><YoutubeVideoId>YS-5oD2Y4Wk</YoutubeVideoId></VideoDTO>';
+        var dataJson = JSON.stringify({ "Title": "Allahu akbar2", "YoutubeVideoId": "dalfjh-5Da" });
+        $http.post(url, dataJson)
+            .success(function(data, status) {
+                console.log(data);
+                console.log(status);
+            })
+            .error(function(data, status) {
+                console.log(data);
+                console.log(status);
+            });
+        /*if (cors) {
+            cors.open('POST', url, true);
+            cors.setRequestHeader('X-PINGOTHER', 'pingpong');
+            //cors.setRequestHeader("Access-Control-Allow-Origin: *");
+            cors.setRequestHeader('Content-Type', 'application/xml');
+            //cors.onreadystatechange = handler;
+            cors.send(data);
+        }*/
+
+        $http({
+            method: 'POST',
+            url: 'http://localhost:43467/api/Videos'
+        }).then(function successCallback(response) {
+            // this callback will be called asynchronously
+            // when the response is available
+        }, function errorCallback(response) {
+            // called asynchronously if an error occurs
+            // or server returns response with an error status.
+        });
+    }
+
     $scope.search = function (isNewQuery) {
+        console.log("Search called");
         $http.get('https://www.googleapis.com/youtube/v3/search', { //GET request to this address
             params: {
                 key: 'AIzaSyCuoHE6u2wQN5UY9JiI7z8qufPhXtU4FnY', //authorization key to allow access to youtube data api

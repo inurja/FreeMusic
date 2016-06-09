@@ -11,41 +11,96 @@
     <div class="row">
         <div class="col-sm-3 col-md-3 col-lg-3 bg" id="leftColumn">
 
-                <H1>Search results</H1>
-                <div id="results">
-                    <div class="video" ng-repeat="video in results">
-                        <img class="video-image" ng-src="{{ video.thumbnail }}">
-                        <p class="video-title">@videoTitle</p>
-                        <input class="btn-info btn" value="Play" type="button" ng-click="playVideo(video.id,video.title)" />
-                        <input class="btn-success btn" type="button" value="Add to playlist" ng-click="addVideoToList(video.id, video.title)" />
-                        @*<p class="video-author">@videoAuthor</p>*@
-                        <hr />
-                    </div>
+            <H1>Search results</H1>
+            <button id="testBtn" onclick="callApi()">Click to Test API</button>
+            <p id="apiResult">---</p>
+            <div id="results">
+                <div class="video" ng-repeat="video in results">
+                    <img class="video-image" ng-src="{{ video.thumbnail }}">
+                    <p class="video-title">@videoTitle</p>
+                    <input class="btn-info btn" value="Play" type="button" ng-click="playVideo(video.id,video.title)"/>
+                    <input class="btn-success btn" type="button" value="Add to playlist" ng-click="addToDatabase()"/> <!--ng-click="addVideoToList(video.id, video.title)"-->
+                    @*<p class="video-author">@videoAuthor</p>*@
+                    <hr/>
                 </div>
+            </div>
 
         </div>
         <div class="col-sm-6 col-md-6 col-lg-6" id="middleColumn">
 
-                <h2 id="currentlyPlaying">Currently Playing: {{ youtube.videoTitle }}</h2>
-                <div id="player">
-                    <div id="placeholder"></div>
-                </div>
+            <h2 id="currentlyPlaying">Currently Playing: {{ youtube.videoTitle }}</h2>
+            <div id="player">
+                <div id="placeholder"></div>
+            </div>
 
         </div>
         <div class="col-sm-3 col-md-3 col-lg-3 list-group" id="rightColumn">
-            
-                <H1>Playlist</H1>
-                <div id="customPlaylist">
-                    <table class=" table-striped">
-                        <tr ng-repeat="video in playList">
-                            <td>
-                                <p class="video-title" ng-click="playVideo(video.id, video.title)">@videoTitle</p>
-                                <input id="removeButton" class="btn-default btn btn-danger" type="button" value="Remove" ng-click="removeVideoFromPlaylist(video.id)" />
-                            </td>
-                        </tr>
-                    </table>
-                </div>
+            <button id="getPlaylist" onclick="callApi()">Click to get Playlist</button>
+            <form class="input-group-lg" ng-submit="createPlaylist()">
+                <input class="oymate" id="query" name="q" type="text" placeholder="Database name" ng-model="query">
+                <!--<input id="submit" type="image" src="search.png" alt="Search">-->
+                <input class="btn-info btn btn-lg" type="submit">
+            </form>
+            <H1>Playlist</H1>
+            <div id="customPlaylist">
+                <table class=" table-striped">
+                    <tr ng-repeat="video in playList">
+                        <td>
+                            <p class="video-title" ng-click="playVideo(video.id, video.title)">@videoTitle</p>
+                            <input id="removeButton" class="btn-default btn btn-danger" type="button" value="Remove" ng-click="removeVideoFromPlaylist(video.id)"/>
+                        </td>
+                    </tr>
+                </table>
+            </div>
 
         </div>
     </div>
 </div>
+
+@section scripts {
+    <script type="text/javascript">
+        function showError(jqXHR) {
+            console.log("showError --- " + jqHXR.status + " : " + jqXHR.statusText);
+        }
+
+        $("#testBtn")
+            .submit(function (event) {
+                console.log("API call called clallaccel");
+                var url = 'http://localhost:43467/Token';
+                var loginData = {
+                    grant_type: 'password',
+                    username: "1@eesti.ee",
+                    password: "a"
+                };
+                $.ajax({
+                        type: 'POST',
+                        url: 'http://localhost:43467/Token',
+                        data: loginData
+                    })
+                    .done(function(data) {
+                        console.log("Returned Data from API: " + data);
+                    })
+                    .fail(showError);
+            });
+
+        function callApi() {
+            console.log("API call called 2");
+            var url = 'http://localhost:43467/Token';
+            var loginData = {
+                grant_type: 'password',
+                username: "1@eesti.ee",
+                password: "a"
+            };
+            $.ajax({
+                type: 'POST',
+                url: url,
+                data: loginData
+            })
+                .done(function(data) {
+                    console.log("Returned Data from API: " + data.access_token);
+                    $("#apiResult").html(data.userName);
+                })
+                .fail(showError);
+        }
+    </script>
+}
