@@ -14,6 +14,7 @@ app.service('googleService', ['$window', function ($window) {
 
     var service = this;
     var results = [];
+ 
     var youtube = {
         ready: false,
         player: null,
@@ -39,6 +40,18 @@ app.service('googleService', ['$window', function ($window) {
             });
         }
         return results;
+    }
+
+    this.listPlaylistFromDatabase = function (data) {
+        playList.length = 0;
+        for (var i = data.length - 1; i >= 0; i--) {
+            console.log(data[i].Title);
+            playList.push({
+                id: data[i].YoutubeVideoId,
+                title: data[i].Title
+            });
+        }
+        return playList;
     }
 
     //Called when Iframe API is loaded
@@ -176,13 +189,13 @@ app.controller('googleController', function ($scope, $http, $log, googleService)
 
     }
 
-    $scope.addToDatabase = function () {
+    $scope.addToDatabase = function (videoId, videoTitle) {
         console.log("POST called4");
         var cors = new XMLHttpRequest();
         var url = 'http://localhost:43467/api/Videos'
         var data =
             '<?xml version="1.0"?><VideoDTO><Title>Client post test</Title><YoutubeVideoId>YS-5oD2Y4Wk</YoutubeVideoId></VideoDTO>';
-        var dataJson = JSON.stringify({ "Title": "Allahu akbar2", "YoutubeVideoId": "dalfjh-5Da" });
+        var dataJson = JSON.stringify({ "Title": videoTitle, "YoutubeVideoId": videoId }); // "Title": "Allahu akbar4", "YoutubeVideoId": videoId 
         $http.post(url, dataJson)
             .success(function(data, status) {
                 console.log(data);
@@ -201,7 +214,7 @@ app.controller('googleController', function ($scope, $http, $log, googleService)
             cors.send(data);
         }*/
 
-        $http({
+        /*$http({
             method: 'POST',
             url: 'http://localhost:43467/api/Videos'
         }).then(function successCallback(response) {
@@ -210,6 +223,18 @@ app.controller('googleController', function ($scope, $http, $log, googleService)
         }, function errorCallback(response) {
             // called asynchronously if an error occurs
             // or server returns response with an error status.
+        });*/
+    }
+
+    $scope.getVideos = function () {
+        console.log("getVideos from Database called");
+        $http.get('http://localhost:43467/api/Videos')
+        .success(function (data) {
+            $log.info("See asi " + data);
+            googleService.listPlaylistFromDatabase(data);
+        })
+        .error(function () {
+            $log.info('Search error');
         });
     }
 
