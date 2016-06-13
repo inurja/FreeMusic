@@ -1,10 +1,7 @@
-﻿
-@model IEnumerable<Domain.Video>
-
-@{
+﻿@{
     ViewBag.Title = "{{youtube.videoTitle}} : YouTubefy";
     var videoTitle = "{{video.title}}";
-    var videoAuthor = "{{video.author}}";
+    //var videoAuthor = "{{video.author}}";
 }
 <div id="mainDiv">
     <header></header>
@@ -23,7 +20,7 @@
                     @*<p class="video-author">@videoAuthor</p>*@
                     <hr/>
                 </div>
-                <button id="loadMoreResultsButton" ng-click="search(false)">Load more results</button>
+                <button id="loadMoreResultsButton" ng-click="search(false)" ng-show="results.length > 0">Load more results</button>
             </div>
 
         </div>
@@ -70,51 +67,3 @@
         </div>
     </div>
 </div>
-
-@section scripts {
-    <script type="text/javascript">
-        function showError(jqXHR) {
-            console.log("showError --- " + jqHXR.status + " : " + jqXHR.statusText);
-        }
-
-        $("#testBtn")
-            .submit(function (event) {
-                console.log("API call called clallaccel");
-                var url = 'http://localhost:43467/Token';
-                var loginData = {
-                    grant_type: 'password',
-                    username: "1@eesti.ee",
-                    password: "a"
-                };
-                $.ajax({
-                        type: 'POST',
-                        url: 'http://localhost:43467/Token',
-                        data: loginData
-                    })
-                    .done(function(data) {
-                        console.log("Returned Data from API: " + data);
-                    })
-                    .fail(showError);
-            });
-
-        function callApi() {
-            console.log("API call called 2");
-            var url = 'http://localhost:43467/Token';
-            var loginData = {
-                grant_type: 'password',
-                username: "1@eesti.ee",
-                password: "a"
-            };
-            $.ajax({
-                type: 'POST',
-                url: url,
-                data: loginData
-            })
-                .done(function(data) {
-                    console.log("Returned Data from API: " + data.access_token);
-                    $("#apiResult").html(data.userName);
-                })
-                .fail(showError);
-        }
-    </script>
-}

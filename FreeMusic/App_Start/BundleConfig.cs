@@ -29,7 +29,8 @@ namespace FreeMusic
 
             bundles.Add(new ScriptBundle("~/bundles/angular").Include(
                 "~/Content/AngularJs/angular.min.js", 
-                "~/Content/AngularJs/AngularTube.js"
+                "~/Content/AngularJs/AngularTube.js",
+                "~/Content/AngularJs/Controller.js"
                 ));
             BundleTable.EnableOptimizations = false;
         }
