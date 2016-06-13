@@ -14,6 +14,8 @@ app.service('googleService', ['$window', function ($window) {
 
     var service = this;
     var results = [];
+    var currentlyPlaying;
+    var j; //current array object that is playing
  
     var youtube = {
         ready: false,
@@ -44,12 +46,12 @@ app.service('googleService', ['$window', function ($window) {
 
     this.listPlaylistFromDatabase = function (data) {
         playList.length = 0;
-        for (var i = data.length - 1; i >= 0; i--) {
-            console.log("LIST THING I NEED TO SEE RIGHNT NOW", data[i]);
+        for (j = data.length - 1; j >= 0; j--) {
+            //console.log("LIST THING I NEED TO SEE RIGHNT NOW", data);
             playList.push({
-                id: data[i].YoutubeVideoId,
-                title: data[i].Title,
-                removeId: data[i].VideoId
+                id: data[j].YoutubeVideoId,
+                title: data[j].Title,
+                removeId: data[j].VideoId
             });
         }
         return playList;
@@ -71,11 +73,32 @@ app.service('googleService', ['$window', function ($window) {
             playerVars: {
                 iv_load_policy: 3,
                 rel: 0,
-                theme: 'light'
+                showinfo: 0
+            },
+            events: {
+                'onStateChange': onYoutubeStateChange
             },
             videoId: 'Rd8Wez2_j7Y',
             videoTitle: 'Ayy lmao'
         });
+    }
+
+    function onYoutubeStateChange(event) {
+        if (event.data == YT.PlayerState.PLAYING) {
+            console.log("Player playing");
+        } else if (event.data == YT.PlayerState.PAUSED) {
+            console.log("Player paused");
+        } else if (event.data == YT.PlayerState.ENDED) {
+            console.log("Player ended");
+            console.log("j = ", j);
+            j = j + 1;
+            if (playList.length - 1 < j) {
+                return;
+            }      
+            service.loadVideo(playList[j].id, playList[j].title);
+            console.log("j = ", j);
+            console.log("ARRAY THING I NEED TO SEE", playList[j].title);
+        }
     }
 
     //Function to load the player, also removes old player
@@ -92,13 +115,15 @@ app.service('googleService', ['$window', function ($window) {
 
 
     //Call out API function to load video by it's ID and set title so we can show currently playing in html somewhere big
-    this.loadVideo = function (id, title) {
+    this.loadVideo = function (id, videoTitle) {
         console.log(id);
         console.log(youtube.player);
+        j = this.findIndexByKeyValue(playList, "title", videoTitle);
+        //console.log("j after indexof = ", j);
         youtube.player.loadVideoById(id);
         youtube.videoId = id;
-        youtube.videoTitle = title;
-        console.log("Title in load video service function: " + title);
+        youtube.videoTitle = videoTitle;
+        console.log("Title in load video service function: " + videoTitle);
         console.log("Youtube.videoTitle in load video service function: " + youtube.videoTitle);
         return youtube;
     }
@@ -140,6 +165,16 @@ app.service('googleService', ['$window', function ($window) {
 
     this.emptyPlaylist = function() {
         playList.length = 0;
+    }
+
+    this.findIndexByKeyValue = function(arr, key, value)
+    {
+        for (var i = 0; i < arr.length; i++) {
+            if (arr[i][key] == value) {
+                return i;
+            }
+        }
+        return null;
     }
 
 }]);
