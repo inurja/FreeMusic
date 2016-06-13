@@ -2,7 +2,7 @@
 @model IEnumerable<Domain.Video>
 
 @{
-    ViewBag.Title = "YouTubefy - Playing {{youtube.videoTitle}}";
+    ViewBag.Title = "{{youtube.videoTitle}} : YouTubefy";
     var videoTitle = "{{video.title}}";
     var videoAuthor = "{{video.author}}";
 }
@@ -12,8 +12,8 @@
         <div class="col-sm-3 col-md-3 col-lg-3 bg" id="leftColumn">
 
             <H1>Search results</H1>
-            <button id="testBtn" onclick="callApi()">Click to Test API</button>
-            <p id="apiResult">---</p>
+            <!--<button id="testBtn" onclick="callApi()">Click to Test API</button>
+            <p id="apiResult">---</p>-->
             <div id="results">
                 <div class="video" ng-repeat="video in results">
                     <img class="video-image" ng-src="{{ video.thumbnail }}">
@@ -28,15 +28,15 @@
         </div>
         <div class="col-sm-6 col-md-6 col-lg-6" id="middleColumn">
 
-            <h2 id="currentlyPlaying">Currently Playing: {{ youtube.videoTitle }}</h2>
+            <h2 id="currentlyPlaying">Currently Playing: {{youtube.videoTitle}}</h2>
             <div id="player">
                 <div id="placeholder"></div>
             </div>
 
         </div>
         <div class="col-sm-3 col-md-3 col-lg-3 list-group" id="rightColumn">
-            <button id="justForTestingAngularFunctions" ng-click="addToVideoInPlaylistDb(1, playlistName, activePlaylist)">Button for testing Angular Functions</button>
-            <button id="getPlaylist" onclick="callApi()">Click to get API</button>
+            <!--<button id="justForTestingAngularFunctions" ng-click="addToVideoInPlaylistDb(1, playlistName, activePlaylist)">Button for testing Angular Functions</button>
+            <button id="getPlaylist" onclick="callApi()">Click to get API</button>-->
 
             <!--Form beginning for SEARCHING a playlist from database-->
             <form class="input-group-lg" ng-submit="checkIfPlaylistExists(playlistName)">

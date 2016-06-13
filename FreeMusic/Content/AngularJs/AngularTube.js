@@ -10,11 +10,10 @@ app.run(function () {
 
 // Service
 
-app.service('googleService', ['$window', function ($window) {
+app.service('googleService', ['$window', '$rootScope', function ($window, $rootScope) {
 
     var service = this;
     var results = [];
-    var currentlyPlaying;
     var j; //current array object that is playing
  
     var youtube = {
@@ -32,7 +31,7 @@ app.service('googleService', ['$window', function ($window) {
 
     this.listResults = function (data) {
         results.length = 0;
-        for (var i = data.items.length - 1; i >= 0; i--) {
+        for (var i = 0; i <= data.items.length - 1; i++) { // for (var i = data.items.length - 1; i >= 0; i--) {
             results.push({
                 id: data.items[i].id.videoId,
                 title: data.items[i].snippet.title,
@@ -46,7 +45,7 @@ app.service('googleService', ['$window', function ($window) {
 
     this.listPlaylistFromDatabase = function (data) {
         playList.length = 0;
-        for (j = data.length - 1; j >= 0; j--) {
+        for (j = 0; j <= data.length - 1; j++) { //for (j = data.length - 1; j >= 0; j--) {
             //console.log("LIST THING I NEED TO SEE RIGHNT NOW", data);
             playList.push({
                 id: data[j].YoutubeVideoId,
@@ -64,6 +63,10 @@ app.service('googleService', ['$window', function ($window) {
         service.loadPlayer();
     }
 
+    function onYoutubeReady(event) {
+        youtube.videoTitle = "-";
+    }
+
     //construct the youtube player
     this.createPlayer = function () {
         return new YT.Player(youtube.playerId, //create player using API
@@ -76,10 +79,11 @@ app.service('googleService', ['$window', function ($window) {
                 showinfo: 0
             },
             events: {
-                'onStateChange': onYoutubeStateChange
-            },
-            videoId: 'Rd8Wez2_j7Y',
-            videoTitle: 'Ayy lmao'
+                'onStateChange': onYoutubeStateChange,
+                'onReady': onYoutubeReady
+            }
+            //videoId: 'Rd8Wez2_j7Y',
+            //videoTitle: 'Ayy lmao'
         });
     }
 
@@ -99,6 +103,7 @@ app.service('googleService', ['$window', function ($window) {
             console.log("j = ", j);
             console.log("ARRAY THING I NEED TO SEE", playList[j].title);
         }
+        $rootScope.$apply(); //needed to update the data binding for HTML currently playing element
     }
 
     //Function to load the player, also removes old player
@@ -116,15 +121,10 @@ app.service('googleService', ['$window', function ($window) {
 
     //Call out API function to load video by it's ID and set title so we can show currently playing in html somewhere big
     this.loadVideo = function (id, videoTitle) {
-        console.log(id);
-        console.log(youtube.player);
-        j = this.findIndexByKeyValue(playList, "title", videoTitle);
-        //console.log("j after indexof = ", j);
+        j = this.findIndexByKeyValue(playList, "title", videoTitle); //helps out with finding what to play next in playlist
         youtube.player.loadVideoById(id);
         youtube.videoId = id;
         youtube.videoTitle = videoTitle;
-        console.log("Title in load video service function: " + videoTitle);
-        console.log("Youtube.videoTitle in load video service function: " + youtube.videoTitle);
         return youtube;
     }
 
@@ -144,11 +144,8 @@ app.service('googleService', ['$window', function ($window) {
     //function to remove video from our custom playlist by youtube videoId
     this.removeVideoFromPlaylist = function (id) {
         var list = this.getPlaylist();
-        //console.log("list: " + list);
         for (var i = 0; i <= list.length - 1; i++) {
-            //console.log("list index " + i + " element: " + list[i]);
             if (list[i].id === id) {
-                console.log("If condition True, splice and break, Video REMOVED from playlist");
                 list.splice(i, 1); //splice i = where to remove, 1 = how many to remove, optional params in end to add new elements
                 break;
             }
@@ -161,6 +158,10 @@ app.service('googleService', ['$window', function ($window) {
 
     this.getPlaylist = function() {
         return playList;
+    }
+
+    this.getYoutube = function() {
+        return youtube;
     }
 
     this.emptyPlaylist = function() {
@@ -187,6 +188,7 @@ app.controller('googleController', function ($scope, $http, $log, googleService)
     var playlistId;
 
     function init() {
+        $scope.youtube = googleService.getYoutube();
         $scope.results = googleService.getResults();
         $scope.playList = googleService.getPlaylist();
     }
@@ -194,6 +196,7 @@ app.controller('googleController', function ($scope, $http, $log, googleService)
     //Call service function to play video
     $scope.playVideo = function (id, title) {
         googleService.loadVideo(id, title);
+        $scope.currentlyPlaying = title;
     };
 
     //Call service function to add video to custom list
@@ -209,14 +212,6 @@ app.controller('googleController', function ($scope, $http, $log, googleService)
 
     $scope.logIn = function() {
         var url = 'http://localhost:43467/Token';
-        //var loginData = 'grant_type=password&username=1@eesti.ee&password=a';
-        var loginData = {
-            grant_type: 'password',
-            username: "1@eesti.ee",
-            password: "a"
-        };
-        var data =
-        //var tokenKey = "";
         $http({
                 method: 'POST',
                 url: url,
@@ -232,52 +227,40 @@ app.controller('googleController', function ($scope, $http, $log, googleService)
                 console.log(data);
                 //sessionStorage.setItem(tokenKey, data.access_token);
             });
-
     }
 
     $scope.createPlaylistDb = function (createPlaylistName) { 
-        console.log("createPlaylistDb called");
-        //TODO Check if playlist already exists
-
         var url = 'http://localhost:43467/api/Playlists/AddPlaylist';
         var dataJson = JSON.stringify({ "PlaylistName": createPlaylistName, "UserIntId": 1});
         $http.post(url, dataJson)
-            .success(function (data, status) {
-                console.log(data);
-                console.log(status);
+            .success(function (data) {
                 $scope.activePlaylist = createPlaylistName; //if success, then add this playlist as current active playlist, so user can add videos to it
                 playlistId = data.id;
                 $scope.getPlaylist(playlistId);
             })
-            .error(function (data, status) {
-                console.log(data);
+            .error(function (status) {
                 console.log(status);
+                console.log("Playlist already exists, please choose a different name");
             });
     }
 
     $scope.addToVideoDb = function (videoId, videoTitle, playlistName) { //videoId is youtube video id (string)
-        console.log("POST called4");
         if (playlistName == null) { //Check if user has active playlist
             alert("No active playlist");
-            console.log("return called");
             return;
         }
         var url = 'http://localhost:43467/api/Videos/AddVideo';
         var dataJson = JSON.stringify({ "Title": videoTitle, "YoutubeVideoId": videoId });
         $http.post(url, dataJson)
-            .success(function(data, status) {
-                console.log("Data from POSTing video to Video db: ", data.id);
-                console.log(status);
+            .success(function(data) {
                 $scope.addToVideoInPlaylistDb(data.id, playlistId); //Add connection between playlist and video, playlistId comes if user has active playlist (this id is a global variable which is set when a playlist is searched or created)
             })
-            .error(function(data, status) {
-                console.log(data);
+            .error(function(status) {
                 console.log(status);
             });
     }
 
     $scope.addToVideoInPlaylistDb = function (vidId, plistId) { //vidId is PK of where video was inserted in Video table
-        console.log("Add VideoInPlaylist called");
         if (plistId == 0) { //Check if user has active playlist
             alert("No active playlist");
             return;
@@ -285,35 +268,26 @@ app.controller('googleController', function ($scope, $http, $log, googleService)
             var url = 'http://localhost:43467/api/VideoInPlaylists';
             var dataJson = JSON.stringify({ "PlaylistId": plistId, "VideoId": vidId });
             $http.post(url, dataJson)
-                .success(function (data, status) {
-                    console.log(data);
+                .success(function (status) {
                     console.log(status);
-                    console.log("Succesfully added VideoInPlaylist????");
-
                     $scope.getPlaylist(playlistId);
-                    //DO SOMETHING
                 })
-                .error(function (data, status) {
-                    console.log(data);
+                .error(function (status) {
                     console.log(status);
-                    //DO SOMETHING
                 });
         }
-    
     }
-
+    /*
     $scope.getVideos = function () {
         console.log("getVideos from Database called");
         $http.get('http://localhost:43467/api/Videos')
         .success(function (data) {
-            $log.info("See asi " + data);
             googleService.listPlaylistFromDatabase(data);
         })
         .error(function () {
-            $log.info('Search error');
         });
     }
-
+    */
 
     //YouTubeDataApi CALL
     $scope.search = function (isNewQuery) {
@@ -339,8 +313,6 @@ app.controller('googleController', function ($scope, $http, $log, googleService)
     }
 
     $scope.checkIfPlaylistExists = function(playlistName) {
-        console.log("checkIfPlaylistExists called");
-        console.log("Playlistname entered: " + playlistName);
         if (playlistName == null) {
             alert("No playlist name entered in Get Playlist");
             return;
@@ -348,62 +320,38 @@ app.controller('googleController', function ($scope, $http, $log, googleService)
         var url = 'http://localhost:43467/api/Playlists/GetPlaylistIdByPlaylistName/';
         $http.get(url + playlistName)
             .success(function (data, status) {
-                console.log("Logged data from checkIfPlaylistExists: ", data);
                 console.log(status);
-                if (data == 0) { //ma miskipärast pidin "null"-ga võrdlema :S
+                if (data == 0) {
                     alert("No playlist with such name");
                 } else {
-                    //alert("playlist found (just testing, maybe not found but it passed if test)");
                     playlistId = data; //set ID (primary key) of this playlist name
-                    //console.log(playlistId);
                     $scope.activePlaylist = playlistName;
                     $scope.getPlaylist(playlistId);
                 }
-                
-                //DO SOMETHING
             })
-            .error(function (data, status) {
-                console.log(data);
+            .error(function (status) {
                 console.log(status);
-                //DO SOMETHING
             });
-        /*$http.get('https://www.googleapis.com/youtube/v3/playlists',
-        {
-            params: {
-                key: 'AIzaSyCuoHE6u2wQN5UY9JiI7z8qufPhXtU4FnY',
-                part: 'snippet',
-                maxResults: '8'
-            }
-        });*/
     }
 
-    $scope.getPlaylist = function (plistId, videoInPlaylistId) {
+    $scope.getPlaylist = function (plistId) {
         googleService.emptyPlaylist(); //empty current playlist (this is local playlist array to show on youtubefy page)
-        console.log("getPlaylist called");
-        //console.log("Playlistname entered: " + playlistName);
         if (plistId == 0) {
             alert("No playlist playlistId");
-            console.log("getPlaylist return called");
             return;
         }
         var url = 'http://localhost:43467/api/VideoInPlaylists/GetAllVideosInPlaylistByPlaylistId/';
         $http.get(url + plistId)
             .success(function (data, status) {
-                console.log("Logged data from GetPlaylist: ", data);
                 console.log(status);
                 if (data == 0) {
                     alert("no return data for playlist");
                 } else {
-                    //alert("playlist found (just testing, maybe not found but it passed if test)");
                     googleService.listPlaylistFromDatabase(data);
                 }
-
-                //DO SOMETHING
             })
             .error(function (data, status) {
-                console.log(data);
                 console.log(status);
-                //DO SOMETHING
             });
         /*$http.get('https://www.googleapis.com/youtube/v3/playlists',
         {
@@ -416,38 +364,32 @@ app.controller('googleController', function ($scope, $http, $log, googleService)
     }
 
     $scope.removeFromPlaylist = function(videoId, removeId) { //videoId is youtubeVideoId (string)
-        console.log("remove called");
         var url = 'http://localhost:43467/api/VideoInPlaylists/DeleteVideoInPlaylistsByVideoId/' + removeId; //removeId is primary key (not really, but thats how we gon get it lol)) of the videoInPlaylist entry which we need to remove. Its primary key of Video playlist object
         $http.delete(url)
             .success(function (data, status) {
-                console.log(data);
-                console.log("Delete API success: ", status);
+                console.log("Delete success: ", status);
                 googleService.removeVideoFromPlaylist(videoId);
                 $scope.removeFromVideoDb(removeId);
-                //DO SOMETHING
             })
             .error(function (data, status) {
-                console.log(data);
+                console.log(status);
+            });
+    }
+
+    $scope.removeFromVideoDb = function(removeId) {
+        var url = 'http://localhost:43467/api/Videos/DeleteVideoById/' + removeId; //removeId is primary key (not really, but thats how we gon get it lol)) of the videoInPlaylist entry which we need to remove. Its primary key of Video playlist object
+        $http.delete(url)
+            .success(function (status) {
+                console.log("Delete Videos success: ", status);
+            })
+            .error(function (status) {
                 console.log(status);
                 //DO SOMETHING
             });
     }
 
-
-    $scope.removeFromVideoDb = function(removeId) {
-        console.log("remove from videoDb called");
-        var url = 'http://localhost:43467/api/Videos/DeleteVideoById/' + removeId; //removeId is primary key (not really, but thats how we gon get it lol)) of the videoInPlaylist entry which we need to remove. Its primary key of Video playlist object
-        $http.delete(url)
-            .success(function (data, status) {
-                console.log(data);
-                console.log("Delete Videos API success: ", status);
-                //DO SOMETHING
-            })
-            .error(function (data, status) {
-                console.log(data);
-                console.log(status);
-                //DO SOMETHING
-            });
+    $scope.bindCurrentlyPlaying = function() {
+        $scope.currentlyPlaying = googleService.currentlyPlaying;
     }
     /*
     $scope.FUNCTIONNAME = function (INPUT) { //VideoId is number, not actual youtube video id as string
