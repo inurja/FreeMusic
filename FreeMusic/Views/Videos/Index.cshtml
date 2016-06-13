@@ -19,7 +19,7 @@
                     <img class="video-image" ng-src="{{ video.thumbnail }}">
                     <p class="video-title">@videoTitle</p>
                     <input class="btn-info btn" value="Play" type="button" ng-click="playVideo(video.id,video.title)"/>
-                    <input class="btn-success btn" type="button" value="Add to playlist" ng-click="addToDatabase(video.id,video.title)"/> <!--ng-click="addVideoToList(video.id, video.title)"-->
+                    <input class="btn-success btn" type="button" value="Add to playlist" ng-click="addToVideoDb(video.id,video.title,activePlaylist)"/> <!--ng-click="addVideoToList(video.id, video.title)"-->
                     @*<p class="video-author">@videoAuthor</p>*@
                     <hr/>
                 </div>
@@ -35,24 +35,32 @@
 
         </div>
         <div class="col-sm-3 col-md-3 col-lg-3 list-group" id="rightColumn">
+            <button id="justForTestingAngularFunctions" ng-click="addToVideoInPlaylistDb(1, playlistName, activePlaylist)">Button for testing Angular Functions</button>
             <button id="getPlaylist" onclick="callApi()">Click to get API</button>
-            <form class="input-group-lg" ng-submit="getVideos()">
-                <input class="oymate" id="queryGetVideos" name="q" type="text" placeholder="Search playlist">
+
+            <!--Form beginning for SEARCHING a playlist from database-->
+            <form class="input-group-lg" ng-submit="checkIfPlaylistExists(playlistName)">
+                <input class="oymate" id="queryGetVideos" name="q" type="text" placeholder="Get playlist" ng-model="playlistName">
                 <!--<input id="submit" type="image" src="search.png" alt="Search">-->
                 <input class="btn-info btn btn-lg" type="submit">
             </form>
-            <form class="input-group-lg" ng-submit="createPlaylist()">
-                <input class="oymate" id="query" name="q" type="text" placeholder="Create playlist" ng-model="query">
+            <p>{{test}}</p>
+
+            <!--Form beginning for CREATING a playlist to database-->
+            <form class="input-group-lg" ng-submit="createPlaylistDb(createPlaylistName)">
+                <input class="oymate" id="query" name="q" type="text" placeholder="Create playlist" ng-model="createPlaylistName">
                 <!--<input id="submit" type="image" src="search.png" alt="Search">-->
                 <input class="btn-info btn btn-lg" type="submit">
             </form>
-            <H1>Playlist</H1>
+
+            <!--Playlist results for current playlist-->
+            <H1>Playlist - {{activePlaylist}}</H1>
             <div id="customPlaylist">
-                <table class=" table-striped">
+                <table class="table-striped">
                     <tr ng-repeat="video in playList">
                         <td>
-                            <p class="video-title" ng-click="playVideo(video.id, video.title)">@videoTitle</p>
-                            <input id="removeButton" class="btn-default btn btn-danger" type="button" value="Remove" ng-click="removeVideoFromPlaylist(video.id)"/>
+                            <p class="video-title" ng-click="playVideo(video.id, video.title)">{{video.title}}</p>
+                            <input id="removeButton" class="btn-default btn btn-danger" type="button" value="Remove" ng-click="removeFromPlaylist(video.id, video.removeId)"/>
                         </td>
                     </tr>
                 </table>
